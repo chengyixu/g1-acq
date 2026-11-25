@@ -26,7 +26,7 @@ const NEXT_TARGET = "g1.fixture.next_offer";
 const FIXED_TIME = "2026-11-23T07:40:06.325Z";
 const DEFAULT_RULES = [
   { id: "default-2tb", match: "prefix", from: "g1.ios.2tb.", to: TARGET, enabled: true },
-  { id: "default-20tb", match: "exact", from: TWENTY, to: "g1.20tb.3months_ip_75p.acq", enabled: true },
+  { id: "default-20tb", match: "exact", from: TWENTY, to: "g1.play.20tb.12months_eft", enabled: true },
   { id: "default-30tb", match: "exact", from: THIRTY, to: "g1.ai.ultra.3months_ip_75p.acq", enabled: true }
 ];
 const VARIANTS = [
@@ -1027,7 +1027,7 @@ for (const variant of VARIANTS) {
     const labels = {
       trial: "Ultra 1个月免费试用优先（历史模式）",
       discount: "Ultra 三个月一折优先（历史模式）",
-      discount75: "Ultra 三个月 75p（2.5折）",
+      discount75: "Ultra 20TB 12个月试用 / 30TB 三个月 75p（2.5折）",
       custom: "手动映射"
     };
     for (const mode of Object.keys(labels)) {

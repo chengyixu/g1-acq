@@ -6,7 +6,7 @@
   var VERSION = "v7.9.0";
   var COLLECTOR_VERSION = "g1-acq-v7.9-mappings";
   var MODE_NAMES = {
-    discount75: "Ultra 三个月 75p（2.5折）",
+    discount75: "Ultra 20TB 12个月试用 / 30TB 三个月 75p（2.5折）",
     custom: "手动映射",
     trial: "Ultra 1个月免费试用优先（历史模式）",
     discount: "Ultra 三个月一折优先（历史模式）"
@@ -35,7 +35,7 @@ function createG1MappingConfig(store) {
   function defaults() {
     return [
       { id: "default-2tb", match: "prefix", from: SOURCE_PREFIX, to: "g1.2tb.ai.12months_ip_90p", enabled: true },
-      { id: "default-20tb", match: "exact", from: "g1.ios.20tb.m.v2", to: "g1.20tb.3months_ip_75p.acq", enabled: true },
+      { id: "default-20tb", match: "exact", from: "g1.ios.20tb.m.v2", to: "g1.play.20tb.12months_eft", enabled: true },
       { id: "default-30tb", match: "exact", from: "g1.ios.30tb.ai.pro.m", to: "g1.ai.ultra.3months_ip_75p.acq", enabled: true }
     ];
   }
@@ -608,7 +608,7 @@ function createG1MappingConfig(store) {
       "<label>原始 SKU<input name=from type=text list=sku-candidates required maxlength=175 pattern=\"(?:g1\\.|com\\.google\\.one\\.)[A-Za-z0-9._\\-]{1,160}\" autocomplete=off autocapitalize=none spellcheck=false value=\"" +
       escape(draft.from.slice(0, 300)) + "\" placeholder=\"g1.ios.20tb.m.v2\"></label>" +
       "<label>目标 SKU<input name=to type=text list=sku-candidates required maxlength=175 pattern=\"(?:g1\\.|com\\.google\\.one\\.)[A-Za-z0-9._\\-]{0,159}[A-Za-z0-9_\\-]\" autocomplete=off autocapitalize=none spellcheck=false value=\"" +
-      escape(draft.to.slice(0, 300)) + "\" placeholder=\"g1.20tb.3months_ip_75p.acq\"></label></div>" +
+      escape(draft.to.slice(0, 300)) + "\" placeholder=\"g1.play.20tb.12months_eft\"></label></div>" +
       "<div class=actions><button class=primary type=submit name=action value=upsert>" + (isNew ? "添加并保存" : "保存这条映射") + "</button>" +
       (isNew ? "" : "<button class=delete type=submit name=action value=delete formnovalidate>删除这条映射</button>") + "</div></fieldset></form>";
   }
@@ -632,7 +632,7 @@ function createG1MappingConfig(store) {
     if (config.rules.length >= engine.limit) parts.push("<p class=note>已达到规则上限，删除一条后即可新增。</p>");
     parts.push("<form class=reset method=post action=\"" + ROOT + "\">" + revisionInput() +
       "<button type=submit name=action value=reset" + (!writable ? " disabled" : "") + ">恢复默认映射</button></form>",
-      "<p class=note>恢复默认会把当前规则替换为 2TB 12个月90p、20TB / 30TB 三个月75p三条内建规则；采集和执行历史保留。</p></section>");
+      "<p class=note>恢复默认会把当前规则替换为 2TB 12个月90p、20TB 12个月试用（g1.play.20tb.12months_eft）、30TB 三个月75p三条内建规则；采集和执行历史保留。</p></section>");
     return parts.join("");
   }
   var latestScan = report.scan.recentResponses.length ?
@@ -641,7 +641,7 @@ function createG1MappingConfig(store) {
     "记录来自本版采集脚本；按响应时间与计数判断是否产生了新记录。" :
     report.scan.version ? "旧采集记录；尚未保存本版采集响应记录。" : "尚未保存本版采集响应记录。";
   var configuredOffers = config.mode === "discount75" ?
-    "当前默认的 20TB / 30TB 使用 Ultra 三个月 75p（2.5折），没有备用档。" :
+    "当前默认的 20TB 使用 12个月试用目标（g1.play.20tb.12months_eft）、30TB 使用 Ultra 三个月 75p（2.5折），没有备用档。" :
     config.mode === "custom" ? "当前使用手动映射，目标以映射管理中的启用规则为准。" : "当前映射配置未就绪，暂停改写。";
   var statuses = {
     "rewritten": "已执行字符串替换",

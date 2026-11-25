@@ -1,8 +1,10 @@
 # Google One SKU 管理、Pro 12个月优惠测试与采集
 
+> **🍴 Fork 变更（chengyixu/g1-acq）**：默认 20TB 目标改为 12个月免费试用 `g1.play.20tb.12months_eft`（原 `g1.20tb.3months_ip_75p.acq`）。
+
 **v7.9.0 主模块为 G1 ACQ SKU 管理，响应运行版本为 `g1-acq-v7.9-mappings`。** 现有[本地报告](https://one.google.com/g1-sku-report)加入手动映射卡片与表单，支持新增、编辑、勾选启用、保存、删除和恢复默认；采集列表可预填源，源与目标输入支持已采集 SKU 候选。配置保存在手机，下一次 `/ai?` 响应使用新规则，历史采集与执行记录独立显示。
 
-默认 `discount75` 保留原三条映射：20TB / 30TB 三个月 75p 与 2TB 目标 `g1.2tb.ai.12months_ip_90p`（无 `.acq`）；手动保存后为 `custom`。**75p = 75% off、实付 25%、2.5折**；本版命中行 `fallback=false`。历史试用映射来自 [GitHub PR #3](https://github.com/crhywun/g1-acq/pull/3)，贡献者 [@cehomecambodia-lang](https://github.com/cehomecambodia-lang) 提供了 20TB / 30TB Ultra 1个月免费试用 SKU 与三个月 90p 备用方案，其历史含义保留。
+默认 `discount75` 保留原三条映射：20TB 12个月免费试用目标 `g1.play.20tb.12months_eft`、30TB 三个月 75p 与 2TB 目标 `g1.2tb.ai.12months_ip_90p`（无 `.acq`）；手动保存后为 `custom`。**75p = 75% off、实付 25%、2.5折**；20TB 目标为 Play 结算的 12个月免费试用 offer（首期 $0）；本版命中行 `fallback=false`。历史试用映射来自 [GitHub PR #3](https://github.com/crhywun/g1-acq/pull/3)，贡献者 [@cehomecambodia-lang](https://github.com/cehomecambodia-lang) 提供了 20TB / 30TB Ultra 1个月免费试用 SKU 与三个月 90p 备用方案，其历史含义保留。
 
 采集只读取手机收到的原始匹配响应，**不会主动查询全量 SKU**。最多保留 300 个 ID、最近 10 条脱敏响应事件，时间使用 UTC。旧 ID 再次出现会累加次数；当前报告版本与实际记录版本分别显示，升级不重标历史。
 
@@ -10,10 +12,10 @@
 
 ## 1. 安装与升级主模块
 
-**G1 ACQ SKU 管理 — 本地手动映射，保留默认 75p 与 2TB 目标**
+**G1 ACQ SKU 管理 — 本地手动映射，保留 20TB 12个月试用、30TB 三个月 75p 与 2TB 目标**
 
 ```text
-https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/g1-acq-ultra-discount.sgmodule
+https://cdn.jsdelivr.net/gh/chengyixu/g1-acq@main/g1-acq-ultra-discount.sgmodule
 ```
 
 | 项目 | 当前主入口 |
@@ -30,7 +32,7 @@ https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/g1-acq-ultra-discount.sgmodule
 3. 重新连接小火箭，再打开 Google App 的方案页。
 4. 打开本机报告核对 **本机脚本已接管** 与 **v7.9.0**，分别查看当前配置、实际 `scan.version/mode/updatedAt` 和 `test.version/mode/updatedAt`；历史保持到新记录成功写入。
 
-安装入口与全部内部脚本固定 `@v7.9.0`，旧固定链接需换新地址。历史 `v7.8.0` / `v7.7.0` / `v7.6.0` / `v7.5.0` / `v7.4.0` / `v7.3.0` / `v7.2.0` / `v7.1.0` / `v7.0.0` 和 `pro-annual-test-v1` / `pro-annual-test-v2` 标签保持原样；试用模块仍缺席，旧固定试用链接仍引用原版本。升级保留两份 schema 1 数据集、累计次数与最近 10 次响应，不要求清空记录。
+安装入口与全部内部脚本指向 fork 的 main 分支（`chengyixu/g1-acq@main`），旧固定链接需换新地址。历史 `v7.8.0` / `v7.7.0` / `v7.6.0` / `v7.5.0` / `v7.4.0` / `v7.3.0` / `v7.2.0` / `v7.1.0` / `v7.0.0` 和 `pro-annual-test-v1` / `pro-annual-test-v2` 标签保持原样；试用模块仍缺席，旧固定试用链接仍引用原版本。升级保留两份 schema 1 数据集、累计次数与最近 10 次响应，不要求清空记录。
 
 [g1-acq-v7.sgmodule](../g1-acq-v7.sgmodule) 保留名称 **G1 ACQ**；[g1-pro-annual-test.sgmodule](../g1-pro-annual-test.sgmodule) 保留名称 **G1 Pro Annual Test** 和 `/ai?` 响应范围，均使用同一映射配置。[g1-sku-scan.sgmodule](../g1-sku-scan.sgmodule) 仅更新 pin 与报告请求体配置，[g1-sku-scan.js](../g1-sku-scan.js) 仍为 `pro-annual-test-v2`，保持响应原文，没有模式或响应事件字段。使用主入口时兼容入口保持关闭。
 
@@ -88,10 +90,10 @@ https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/g1-acq-ultra-discount.sgmodule
 | `id` | 匹配方式与源 | 目标 ID |
 |---|---|---|
 | `default-2tb` | 前缀 `g1.ios.2tb.` | `g1.2tb.ai.12months_ip_90p` |
-| `default-20tb` | 精确 `g1.ios.20tb.m.v2` | `g1.20tb.3months_ip_75p.acq` |
+| `default-20tb` | 精确 `g1.ios.20tb.m.v2` | `g1.play.20tb.12months_eft` |
 | `default-30tb` | 精确 `g1.ios.30tb.ai.pro.m` | `g1.ai.ultra.3months_ip_75p.acq` |
 
-默认 2TB 目标保留 90p、无 `.acq`；20TB / 30TB 保留三个月 75p。默认与手动映射均无备用，`fallback=false`；试用 / 90p / 75p 目标是否出现在原始响应中不改变规则。所有规则未命中、全部禁用或列表为空时原样返回响应；配置损坏或存储读取出错也暂停改写，不假定默认配置。
+默认 2TB 目标保留 90p、无 `.acq`；20TB 使用 12个月免费试用目标、30TB 保留三个月 75p。默认与手动映射均无备用，`fallback=false`；试用 / 90p / 75p 目标是否出现在原始响应中不改变规则。所有规则未命中、全部禁用或列表为空时原样返回响应；配置损坏或存储读取出错也暂停改写，不假定默认配置。
 
 | 执行字段 | 含义 |
 |---|---|
@@ -185,7 +187,7 @@ https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/g1-acq-ultra-discount.sgmodule
 
 | 保存的模式值 | 报告名称 |
 |---|---|
-| `discount75` | Ultra 三个月 75p（2.5折） |
+| `discount75` | Ultra 20TB 12个月试用 / 30TB 三个月 75p（2.5折） |
 | `custom` | 手动映射 |
 | `trial` | Ultra 1个月免费试用优先（历史模式） |
 | `discount` | Ultra 三个月一折优先（历史模式） |
@@ -237,7 +239,7 @@ https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/g1-acq-ultra-discount.sgmodule
 
 1. 在 Google App 依次浏览实际月付、年付和优惠入口，等待新响应。
 2. 在 Safari 查看[本地报告](https://one.google.com/g1-sku-report)中的原始候选，点采集行预填源，按第 4 节填写规则并保存；候选输入只帮助填写，不自动启用规则。
-3. 重新进入对应源方案，按 `test.version`、`test.mode`、`test.mappingRevision`、`test.updatedAt` 与各行 `to` 核对下一响应。使用默认配置时，2TB 保留 90p，20TB / 30TB 保留 75p，`fallback=false`。
+3. 重新进入对应源方案，按 `test.version`、`test.mode`、`test.mappingRevision`、`test.updatedAt` 与各行 `to` 核对下一响应。使用默认配置时，2TB 保留 90p，20TB 使用 12个月免费试用目标，30TB 保留 75p，`fallback=false`。
 4. 进入原生订阅流程，记录 App Store 实际商品、周期、初次与续费金额或错误提示，再导出 JSON 对照。
 
 原始采集与配置目标分开保存，替换生成的目标不会自动成为已采集 SKU。脚本只处理网络响应，没有直接调用 Google App 内 StoreKit；`Product.products(for:)` / `SKProductsRequest` 是由对应 App 查询已知 ID 的商品接口，不是全量商品目录。报告命中描述文本改写，实机订阅结果按实际显示填写。
@@ -272,7 +274,7 @@ https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/g1-acq-ultra-discount.sgmodule
 采集 / 测试时间（含时区）：[填写]
 iOS / Google App / Shadowrocket 版本：[填写]
 唯一开启的主模块：G1 ACQ SKU 管理
-主安装地址：https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/g1-acq-ultra-discount.sgmodule
+主安装地址：https://cdn.jsdelivr.net/gh/chengyixu/g1-acq@main/g1-acq-ultra-discount.sgmodule
 实际模块地址 / 发布版本：[填写；当前 v7.9.0]
 预期响应版本：g1-acq-v7.9-mappings
 旧模块与独立扫描器关闭情况：[填写实际状态]
@@ -293,7 +295,7 @@ scan.recentResponses：[按 JSON 旧→新填写最多10条；HTML 新→旧；�
 最新事件 candidateCount / addedCount / omittedCount：[填写]
 Google App 实际方案 / 原始完整源 SKU：[填写实际显示与采集值]
 默认 2TB 目标：g1.2tb.ai.12months_ip_90p（无 .acq）
-默认 20TB / 30TB 目标：g1.20tb.3months_ip_75p.acq / g1.ai.ultra.3months_ip_75p.acq
+默认 20TB / 30TB 目标：g1.play.20tb.12months_eft / g1.ai.ultra.3months_ip_75p.acq
 手动规则目标：[填写实际配置；未使用则填默认]
 实际 test.version / mode / updatedAt（UTC）：[填写实际记录，不按当前配置补写]
 实际 test.mappingRevision / mappingUpdatedAt / mappingStatus：[填写；旧记录缺失则记未记录]
@@ -321,4 +323,4 @@ node --test tests/*.test.cjs
 
 [lib/mapping-config.js](../lib/mapping-config.js) 提供共享配置引擎；[tools/build-variants.cjs](../tools/build-variants.cjs) 把生成区块嵌入 [g1-acq.js](../g1-acq.js) 与 [g1-sku-report.js](../g1-sku-report.js)，再生成 [g1-acq-discount.js](../g1-acq-discount.js) 与 [g1-sku-report-discount.js](../g1-sku-report-discount.js)。修改源后执行 `node tools/build-variants.cjs`，`--check` 只检查两个源内区块和两个副本，不写文件。
 
-验证项目包括默认 75p / 2TB 规则、手动增删改 / 禁用 / 恢复、空列表、精确优先 / 最长前缀 / 单次替换、两个 SKU 命名空间、30 条上限、表单错误与旧页面冲突、存储失败、下一响应生效、历史独立、300 / 10 上限、JSON 与模块 pin / 请求体标记。测试结果按实际命令输出记录，实机结果按第 8 节填写。
+验证项目包括默认 2TB、20TB 12个月试用与 30TB 75p 规则、手动增删改 / 禁用 / 恢复、空列表、精确优先 / 最长前缀 / 单次替换、两个 SKU 命名空间、30 条上限、表单错误与旧页面冲突、存储失败、下一响应生效、历史独立、300 / 10 上限、JSON 与模块 pin / 请求体标记。测试结果按实际命令输出记录，实机结果按第 8 节填写。

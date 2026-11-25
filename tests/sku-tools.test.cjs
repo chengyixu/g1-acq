@@ -24,10 +24,10 @@ const REPORT_VERSION = "v7.9.0";
 const MODE_LABELS = {
   trial: "Ultra 1个月免费试用优先（历史模式）",
   discount: "Ultra 三个月一折优先（历史模式）",
-  discount75: "Ultra 三个月 75p（2.5折）",
+  discount75: "Ultra 20TB 12个月试用 / 30TB 三个月 75p（2.5折）",
   custom: "手动映射"
 };
-const TWENTY_TARGET = "g1.20tb.3months_ip_75p.acq";
+const TWENTY_TARGET = "g1.play.20tb.12months_eft";
 const THIRTY_TARGET = "g1.ai.ultra.3months_ip_75p.acq";
 const ULTRA_OFFERS = [
   "g1.20tb.1month_eft.acq", "g1.20tb.3months_ip_90p.acq", TWENTY_TARGET,
@@ -37,7 +37,7 @@ const VARIANTS = [
   { script: "g1-acq.js", report: "g1-sku-report.js" },
   { script: "g1-acq-discount.js", report: "g1-sku-report-discount.js" }
 ];
-const LEGACY_TWENTY_FALLBACK = TWENTY_TARGET;
+const LEGACY_TWENTY_FALLBACK = "g1.20tb.3months_ip_75p.acq";
 const LEGACY_THIRTY_FALLBACK = THIRTY_TARGET;
 const source = Object.fromEntries(
   ["g1-acq.js", "g1-acq-discount.js", "g1-sku-scan.js", "g1-sku-report.js", "g1-sku-report-discount.js"].map(name =>
@@ -132,7 +132,7 @@ for (const variant of VARIANTS) {
     }
   });
 
-  test("all 64 combinations of six Ultra offers use fixed 75p targets without changing prices or dates", () => {
+  test("all 64 combinations of six Ultra offers use fixed default targets without changing prices or dates", () => {
     for (let mask = 0; mask < 64; mask++) {
       const observed = ULTRA_OFFERS.filter((_, index) => mask & (1 << index));
       // Exercise both offer orders so neither presence nor ordering can select a target.
@@ -189,11 +189,11 @@ for (const variant of VARIANTS) {
     assert(!mapped.logs.some(line => line.includes("fallback=")));
   });
 
-  test("saved offers do not select targets and both Ultra tiers retain fixed 75p defaults", () => {
-    for (const savedOffers of [ULTRA_OFFERS.filter(id => !id.includes("75p")), [TWENTY_TARGET, THIRTY_TARGET]]) {
+  test("saved offers do not select targets and both Ultra tiers retain fixed default targets", () => {
+    for (const savedOffers of [ULTRA_OFFERS.filter(id => id !== TWENTY_TARGET && id !== THIRTY_TARGET), [TWENTY_TARGET, THIRTY_TARGET]]) {
       const storage = new Map();
       run(variant.script, { url: "https://one.google.com/plans", body: JSON.stringify(savedOffers), storage });
-      for (const offers of [[], ULTRA_OFFERS.filter(id => !id.includes("75p")), ULTRA_OFFERS]) {
+      for (const offers of [[], ULTRA_OFFERS.filter(id => id !== TWENTY_TARGET && id !== THIRTY_TARGET), ULTRA_OFFERS]) {
         const result = run(variant.script, { body: JSON.stringify([SOURCE, TWENTY, THIRTY, ...offers]), storage });
         assert.deepEqual(JSON.parse(result.payload.body), [TARGET, TWENTY_TARGET, THIRTY_TARGET, ...offers]);
         assert.deepEqual(get(storage, TEST_KEY).matchedFrom, [
@@ -446,7 +446,7 @@ for (const variant of VARIANTS) {
     }
   });
 
-  test("report exports fixed 75p targets as non-fallback rows and separates annual hits from total hits", () => {
+  test("report exports fixed default targets as non-fallback rows and separates annual hits from total hits", () => {
     const storage = new Map();
     run(variant.script, { body: JSON.stringify([SOURCE, TWENTY, THIRTY, ...ULTRA_OFFERS]), storage });
     const result = run(variant.report, { url: REPORT + "?format=json", storage });
@@ -1122,10 +1122,10 @@ nodeTest("collector passes through on storage failure", () => {
   assert(result.logs.some(line => line.includes("saved=no")));
 });
 
-nodeTest("exactly four modules pin v7.9.0 and pair the retained entries with their reports", () => {
+nodeTest("exactly four modules pin the fork main branch and pair the retained entries with their reports", () => {
   assert.equal(fs.existsSync(path.join(root, "g1-acq.sgmodule")), false);
   assert.equal(fs.existsSync(path.join(root, "g1-acq-ultra-trial.sgmodule")), false);
-  const scriptBase = "https://cdn.jsdelivr.net/gh/crhywun/g1-acq@v7.9.0/";
+  const scriptBase = "https://cdn.jsdelivr.net/gh/chengyixu/g1-acq@main/";
   const modules = [
     { file: "g1-acq-ultra-discount.sgmodule", name: "G1 ACQ SKU 管理", script: "g1-acq-discount.js", report: "g1-sku-report-discount.js", allPaths: true },
     { file: "g1-acq-v7.sgmodule", name: "G1 ACQ", script: "g1-acq.js", report: "g1-sku-report.js", allPaths: true },
@@ -1140,7 +1140,7 @@ nodeTest("exactly four modules pin v7.9.0 and pair the retained entries with the
     if (entry.name) assert(module.split(/\r?\n/).includes("#!name=" + entry.name), entry.file);
     for (const script of scripts) {
       const url = script.match(/script-path=([^,\s]+)/)[1];
-      assert.match(url, /^https:\/\/cdn\.jsdelivr\.net\/gh\/crhywun\/g1-acq@v7\.9\.0\/[a-z0-9.-]+\.js$/);
+      assert.match(url, /^https:\/\/cdn\.jsdelivr\.net\/gh\/chengyixu\/g1-acq@main\/[a-z0-9.-]+\.js$/);
       assert.equal(url.slice(0, url.lastIndexOf("/") + 1), scriptBase);
       assert(fs.existsSync(path.join(root, url.split("/").at(-1))));
     }

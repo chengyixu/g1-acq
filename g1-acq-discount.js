@@ -21,7 +21,7 @@ function createG1MappingConfig(store) {
   function defaults() {
     return [
       { id: "default-2tb", match: "prefix", from: SOURCE_PREFIX, to: "g1.2tb.ai.12months_ip_90p", enabled: true },
-      { id: "default-20tb", match: "exact", from: "g1.ios.20tb.m.v2", to: "g1.20tb.3months_ip_75p.acq", enabled: true },
+      { id: "default-20tb", match: "exact", from: "g1.ios.20tb.m.v2", to: "g1.play.20tb.12months_eft", enabled: true },
       { id: "default-30tb", match: "exact", from: "g1.ios.30tb.ai.pro.m", to: "g1.ai.ultra.3months_ip_75p.acq", enabled: true }
     ];
   }
